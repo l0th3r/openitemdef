@@ -77,7 +77,7 @@ jobs:
           mkdir -p .build/public
           cp -r .build/docs/html/* .build/public/
           mkdir -p .build/public/coverage
-          cp -r coverage-report/* build/public/coverage/
+          cp -r coverage-report/* .build/public/coverage/
 
       - name: Upload documentation + coverage artifact
         uses: actions/upload-pages-artifact@v3
