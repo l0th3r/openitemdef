@@ -55,6 +55,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake build-essential doxygen graphviz
+
       - name: Download coverage artifact
         uses: actions/download-artifact@v4
         with:
@@ -63,13 +68,15 @@ jobs:
       
       - name: Prepare documentation + coverage bundle
         run: |
-          mkdir -p build/public/coverage
+          mkdir -p .build/public
+          cp -r .build/docs/html/* .build/public/
+          mkdir -p .build/public/coverage
           cp -r coverage-report/* build/public/coverage/
 
-      - name: Upload coverage artifact
+      - name: Upload documentation + coverage artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./build/public
+          path: ./.build/public
   
   deploy-docs:
     needs: build-docs

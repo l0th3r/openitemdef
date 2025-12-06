@@ -7,7 +7,7 @@ CMAKE_FLAGS=()
 OPT_FLAGS=()
 
 # Doc
-# DOC_REQUESTED=false
+DOC_REQUESTED=false
 
 # Test and coverage
 TEST_REQUESTED=false
@@ -30,6 +30,8 @@ for arg in "$@";
     elif [ "$arg" == "-bcov" ]; then
       CMAKE_FLAGS+=("-DOPENITEMDEF_ENABLE_COVERAGE=ON")
       CMAKE_FLAGS+=("-DOPENITEMDEF_BUILD_TESTS=ON")
+    elif [ "$arg" == "-docs" ]; then
+      DOC_REQUESTED=true
     else
       OPT_FLAGS+="$arg"
     fi
@@ -52,4 +54,9 @@ if [ "$COVR_REQUESTED" = true ]; then
   lcov --remove "$BUILD_DIR/coverage.info" '/usr/*' '*/tests/*' -o "$BUILD_DIR/coverage.cleaned.info"
   genhtml "$BUILD_DIR/coverage.cleaned.info" --output-directory "$BUILD_DIR/coverage-report" --legend --title "libopenmodelviewer Coverage"
   echo ">> Coverage report available in: $BUILD_DIR/coverage-report/index.html"
+fi
+
+if [ "$DOC_REQUESTED" = true ]; then
+  echo ">> Building Doxygen doc..."
+  cmake --build .build --target docs
 fi
