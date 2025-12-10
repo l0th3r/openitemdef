@@ -1,11 +1,11 @@
 # openitemdef
 
 ![status](https://img.shields.io/badge/status-in--development-orange)
+[![Coverage](https://img.shields.io/badge/Coverate_Report-Available-green)](https://l0th3r.github.io/openitemdef/coverage/)
+[![Documentation](https://img.shields.io/badge/Documentation-Available-green)](https://l0th3r.github.io/openitemdef/)
 [![License](https://img.shields.io/github/license/l0th3r/openitemdef)](LICENSE)
 [![language](https://img.shields.io/github/languages/top/l0th3r/openitemdef)](https://github.com/search?q=repo%3Al0th3r%2Fopenitemdef++language%3AC&type=code)
 [![Build](https://github.com/l0th3r/openitemdef/actions/workflows/push_build_deploy.yml/badge.svg)](https://github.com/l0th3r/openitemdef/actions/workflows/push_build_deploy.yml)
-[![Coverage](https://img.shields.io/badge/Test_Coverage-uploaded-blue)](https://l0th3r.github.io/openitemdef/coverage/)
-[![Documentation](https://img.shields.io/badge/docs-latest-green)](https://l0th3r.github.io/openitemdef/)
 
 
 *A C library for parsing, validating, and manipulating [Steam Inventory Schema](https://partner.steamgames.com/doc/features/inventory/schema) files.*
