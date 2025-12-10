@@ -10,7 +10,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 option(OPENITEMDEF_BUILD_TESTS "Build tests" OFF)
 option(OPENITEMDEF_ENABLE_COVERAGE "Build with coverage instrumentation" OFF)
-# option(OPENITEMDEF_BUILD_DOC "Build Doxygen documentation" OFF)
+option(OPENITEMDEF_BUILD_DOCS "Build Doxygen documentation" OFF)
 
 if(OPENITEMDEF_ENABLE_COVERAGE)
     if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang"
@@ -34,22 +34,21 @@ if(OPENITEMDEF_ENABLE_COVERAGE)
     endif()
 endif()
 
+if(OPENITEMDEF_BUILD_DOCS)
+    find_package(Doxygen REQUIRED)
+
+    add_custom_target(docs
+        COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        COMMENT "Generating API documentation with Doxygen"
+        VERBATIM
+    )
+endif()
+
 add_subdirectory(src)
 
 if(OPENITEMDEF_BUILD_TESTS)
     enable_testing()
     add_subdirectory(third_party/unity EXCLUDE_FROM_ALL)
     add_subdirectory(tests)
-endif()
-
-find_package(Doxygen QUIET)
-if(DOXYGEN_FOUND)
-    add_custom_target(docs
-        COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_SOURCE_DIR}/Doxyfile
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        COMMENT "Generating API documentation with Doxygen"
-        VERBATIM
-    )
-else()
-    message(STATUS "Doxygen not found: docs target disabled")
 endif()

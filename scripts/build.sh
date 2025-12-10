@@ -31,6 +31,7 @@ for arg in "$@";
       CMAKE_FLAGS+=("-DOPENITEMDEF_ENABLE_COVERAGE=ON")
       CMAKE_FLAGS+=("-DOPENITEMDEF_BUILD_TESTS=ON")
     elif [ "$arg" == "-docs" ]; then
+      CMAKE_FLAGS+=("-DOPENITEMDEF_BUILD_DOCS=ON")
       DOC_REQUESTED=true
     else
       OPT_FLAGS+="$arg"
