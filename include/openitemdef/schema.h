@@ -15,9 +15,24 @@ extern "C" {
 typedef struct oid_schema_t oid_schema_t;
 
 /**
+ * @brief Error codes associated with oid_schema_t
+ * 
+ */
+typedef enum oid_schema_error_t
+{
+    OID_SCHEMA_SUCCESS = 0,
+    OID_SCHEMA_INVALID_ARGUMENT,
+    OID_SCHEMA_OUT_OF_MEMORY,
+    OID_SCHEMA_UNEXPECTED_JSON, /* provided json is not valid for Steam Inventory Schema */
+    OID_SCHEMA_JANSSON_PARSING, /* jansson parsing error, 'last_json_err' will be populated */
+    OID_SCHEMA_ERR_UNKNOWN
+} oid_schema_error_t;
+
+/**
  * @brief Initializes a new schema.
  *
  * @return A pointer to the newly created schema, NULL if memory allocation fails.
+ * 
  */
 oid_schema_t* oid_init_schema(void);
 
@@ -31,7 +46,7 @@ oid_schema_t* oid_init_schema(void);
  * @note The file is released once parsed.
  * 
  */
-int oid_load_itemdef_schema(oid_schema_t* schema, const char* file_path);
+oid_schema_error_t oid_load_itemdef_schema(oid_schema_t* schema, const char* file_path);
 
 /**
  * @brief Frees all resources associated with a schema.
@@ -51,9 +66,9 @@ void oid_free_schema(oid_schema_t* schema);
  * @note Allocation is dynamic this function will not overwrite or free any data.
  * @note Item counter will not be updated.
  * 
- * @return 0 if the allocation is successful, non-zero value if the allocation failed.
+ * @return schema error
  */
-int oid_alloc_item_defs(oid_schema_t* schema, size_t alloc_size);
+oid_schema_error_t oid_alloc_item_defs(oid_schema_t* schema, size_t alloc_size);
 
 /**
  * @brief Free all parsed item def allocated in schema.
@@ -83,6 +98,15 @@ size_t oid_get_schema_capacity(const oid_schema_t* schema);
 size_t oid_get_schema_size(const oid_schema_t* schema);
 
 /* ERROR HANDLING */
+
+/**
+ * @brief Get oid_schema_error_t as a string
+ * 
+ * @param error The error to get as a string
+ * 
+ * @return The error as a string
+ */
+const char* oid_schema_error_to_string(oid_schema_error_t error);
 
 /**
  * @brief Retrieves the last JSON parsing error stored in the given schema.
