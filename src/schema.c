@@ -7,9 +7,10 @@
 
 struct oid_schema_t
 {
-    json_int_t appid;   /* parsed schema appid */
-
-    json_error_t last_json_err; /* latest jansson parsing error */
+    json_error_t last_syntax_err;   /* latest syntax error */
+    
+    json_int_t appid;   /* schema Steam appid */
+    json_t* items;      /* schema Steam Item Definitions */
 };
 
 oid_schema_t* oid_init_schema(void)
@@ -92,11 +93,11 @@ const char* oid_schema_error_to_string(oid_schema_error_t err)
     switch (err)
     {
         case oid_schema_success:            return "Success";
+        case oid_schema_unknown:            return "Unknown error";
         case oid_schema_invalid_argument:   return "Invalid argument";
         case oid_schema_out_of_memory:      return "Out of memory";
-        case oid_schema_json_format:    return "Unexpected Steam Inventory Schema JSON";
+        case oid_schema_json_format:        return "Unexpected Steam Inventory Schema JSON";
         case oid_schema_json_syntax:        return "Jansson JSON parsing error";
-        case oid_schema_unknown:        return "Unknown error";
         default:                            return oid_schema_error_to_string(oid_schema_unknown);
     }
 }
@@ -108,7 +109,7 @@ const json_error_t* oid_get_last_json_err(const oid_schema_t* sch)
         return NULL;
     }
 
-    return &sch->last_json_err;
+    return &sch->last_syntax_err;
 }
 
 void oid_set_json_error(oid_schema_t* sch, const json_error_t* err)
@@ -118,5 +119,5 @@ void oid_set_json_error(oid_schema_t* sch, const json_error_t* err)
         return;
     }
 
-    sch->last_json_err = *err;
+    sch->last_syntax_err = *err;
 }

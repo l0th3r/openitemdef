@@ -25,7 +25,7 @@ typedef enum oid_schema_error_t
     oid_schema_invalid_argument,    /* provided arguments are invalid */
     oid_schema_out_of_memory,       /* failed to allocate memory */
     oid_schema_json_format,         /* provided json is not formatted as Steam Inventory Schema */
-    oid_schema_json_syntax          /* jansson parsing error 'last_json_err' will be populated with details */
+    oid_schema_json_syntax          /* jansson parsing error 'last_syntax_err' will be populated with details */
 } oid_schema_error_t;
 
 /**
