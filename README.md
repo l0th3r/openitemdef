@@ -1,43 +1,46 @@
 # openitemdef
-
-![status](https://img.shields.io/badge/status-in--development-orange)
+[![Build](https://github.com/l0th3r/openitemdef/actions/workflows/push_build_deploy.yml/badge.svg)](https://github.com/l0th3r/openitemdef/actions/workflows/push_build_deploy.yml)
 [![Coverage](https://img.shields.io/badge/Coverate_Report-Available-green)](https://l0th3r.github.io/openitemdef/coverage/)
 [![Documentation](https://img.shields.io/badge/Documentation-Available-green)](https://l0th3r.github.io/openitemdef/)
+![status](https://img.shields.io/badge/status-in--development-orange)
 [![License](https://img.shields.io/github/license/l0th3r/openitemdef)](LICENSE)
-[![language](https://img.shields.io/github/languages/top/l0th3r/openitemdef)](https://github.com/search?q=repo%3Al0th3r%2Fopenitemdef++language%3AC&type=code)
-[![Build](https://github.com/l0th3r/openitemdef/actions/workflows/push_build_deploy.yml/badge.svg)](https://github.com/l0th3r/openitemdef/actions/workflows/push_build_deploy.yml)
 
+openitemdef is a **C library for [Steam Inventory Schemas](https://partner.steamgames.com/doc/features/inventory/schema) validation**, focused on **accurate diagnostics**, **clear architecture**, and **long-term extensibility**.
 
-*A C library for parsing, validating, and manipulating [Steam Inventory Schema](https://partner.steamgames.com/doc/features/inventory/schema) files.*
-
-**openitemdef** provides a clean C API with predictable memory behavior, strict schema validation, and error reporting designed for integration into game engines, build pipelines, CLI tools, and GUI editors.\
-The project includes a complete test suite using Unity and optional code-coverage instrumentation via GCC/Clang.
-
-## 🚧 Status
-
-> **Note**: This project is under active development.  
-> The current codebase is not stable and APIs may change. Documentation and public examples will follow in future versions.
+This project is designed as a **core validation engine library**, not a one-off CLI tool.  
+It can be embedded in CLIs, CI pipelines, editors, or future GUI tools without rewriting the core logic.
 
 ## Features
+- A **semantic validator** for Steam Inventory schemas
+- A **parser-agnostic core** (JSON backend can be swapped)
+- A foundation for:
+  - CLI validation
+  - CI checks
+  - VS Code / editor integrations
+  - GUI tooling
 
-- **Full JSON schema parsing**  
-  Powered by [*jansson*](https://github.com/akheron/jansson), with strict type checks and detailed validation.
+### What this project is **NOT**
+- A schema editor
+- A formatter or rewriter
+- A Steamworks replacement
+- A monolithic tool mixing parsing, validation, and output
 
-- **Robust internal model**  
-  Supports all Steam Inventory constructs: item definitions, bundles, exchange lists, generators, playtime generators, tags, colors, and more.
+## Roadmap
+### [v0.1 - Core foundation](https://github.com/l0th3r/openitemdef/milestone/1)
+- Diagnostics model
+- Source spans and line mapping
+- JSON backend adapter
+- LocationMap v1
+- Minimal validation pipeline
 
-- **Embedding-friendly**  
-  Made in C to ease cross-language bindings. Designed for use in game engines and their extensions or standalone tools.
+_No Steam rules yet._
 
-## Build Requirements
+### [v1.0 - Semantic rules](https://github.com/l0th3r/openitemdef/milestone/2)
+- Duplicate `itemdefid` detection
+- Type validation
+- Values format validation
+- Required fields
+- Bundle / exchange validation
+- Cross-reference checks
 
-- **C c99 compiler:** GCC or Clang  
-- [CMake](https://cmake.org/) ≥ 3.16
-- **Dependencies:**  
-  - `jansson` (e.g., `libjansson-dev`)
-
-Optional:
-  - [Unity](https://github.com/ThrowTheSwitch/Unity) for testing (bundled as submodule in `third_party/unity`)
-  - [`lcov`](https://github.com/linux-test-project/lcov) for coverage generation
-
-## 🛠 Build
+_Library is usable and v1.0 is shipped._
