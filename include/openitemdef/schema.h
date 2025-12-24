@@ -15,9 +15,24 @@ extern "C" {
 typedef struct oid_schema_t oid_schema_t;
 
 /**
+ * @brief Error codes associated with oid_schema_t
+ * 
+ */
+typedef enum oid_schema_error_t
+{
+    oid_schema_success = 0,         /* success */
+    oid_schema_unknown,             /* unknown error */
+    oid_schema_invalid_argument,    /* provided arguments are invalid */
+    oid_schema_out_of_memory,       /* failed to allocate memory */
+    oid_schema_json_format,         /* provided json is not formatted as Steam Inventory Schema */
+    oid_schema_json_syntax          /* jansson parsing error 'last_syntax_err' will be populated with details */
+} oid_schema_error_t;
+
+/**
  * @brief Initializes a new schema.
  *
  * @return A pointer to the newly created schema, NULL if memory allocation fails.
+ * 
  */
 oid_schema_t* oid_init_schema(void);
 
@@ -31,7 +46,7 @@ oid_schema_t* oid_init_schema(void);
  * @note The file is released once parsed.
  * 
  */
-int oid_load_itemdef_schema(oid_schema_t* schema, const char* file_path);
+oid_schema_error_t oid_load_itemdef_schema(oid_schema_t* schema, const char* file_path);
 
 /**
  * @brief Frees all resources associated with a schema.
@@ -42,47 +57,16 @@ int oid_load_itemdef_schema(oid_schema_t* schema, const char* file_path);
  */
 void oid_free_schema(oid_schema_t* schema);
 
-/**
- * @brief Pre-allocate data for parsing.
- * 
- * @param schema Pointer to the schema. If NULL, the function return 1.
- * @param alloc_size Amout of elements to allocate (not the size).
- * 
- * @note Allocation is dynamic this function will not overwrite or free any data.
- * @note Item counter will not be updated.
- * 
- * @return 0 if the allocation is successful, non-zero value if the allocation failed.
- */
-int oid_alloc_item_defs(oid_schema_t* schema, size_t alloc_size);
-
-/**
- * @brief Free all parsed item def allocated in schema.
- * 
- * @param schema Pointer to the schema. If NULL, the function performs no action.
- * 
- * @note Item counter will be set to 0.
- */
-void oid_free_item_defs(oid_schema_t* schema);
-
-/**
- * @brief Get schema item definition allocated capacity.
- *
- * @param schema Pointer to a valid schema. Must not be NULL.
- * 
- * @return Schema item definitions capacity.
- */
-size_t oid_get_schema_capacity(const oid_schema_t* schema);
-
-/**
- * @brief Get schema stored item definition size.
- *
- * @param schema Pointer to a valid schema. Must not be NULL.
- * 
- * @return Schema item definitions size.
- */
-size_t oid_get_schema_size(const oid_schema_t* schema);
-
 /* ERROR HANDLING */
+
+/**
+ * @brief Get oid_schema_error_t as a string
+ * 
+ * @param error The error to get as a string
+ * 
+ * @return The error as a string
+ */
+const char* oid_schema_error_to_string(oid_schema_error_t error);
 
 /**
  * @brief Retrieves the last JSON parsing error stored in the given schema.

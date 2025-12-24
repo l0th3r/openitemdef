@@ -3,13 +3,14 @@
 
 #include <jansson.h>
 
+#define OID_SCHEMA_ROOT_UNPACK_FORMAT "{s:I, s:o}" /* format : appid = int, items = json_t* */
+
 struct oid_schema_t
 {
-    oid_itemdef_t* item_defs;    /* parsed item definitions */
-    size_t item_defs_capacity;   /* allocated item definitions */
-    size_t item_defs_size;       /* amount of item definitions */
-
-    json_error_t last_json_err; /* latest jansson parsing error */
+    json_error_t last_syntax_err;   /* latest syntax error */
+    
+    json_int_t appid;   /* schema Steam appid */
+    json_t* items;      /* schema Steam Item Definitions */
 };
 
 oid_schema_t* oid_init_schema(void)
@@ -21,28 +22,54 @@ void oid_free_schema(oid_schema_t* schema)
 {
     if (schema)
     {
-        oid_free_item_defs(schema);
         free(schema);
     }
 }
 
-int oid_parse_json_to_struct(oid_schema_t* sch, json_t* jroot)
+/* PARSING */
+oid_schema_error_t oid_parse_json_root(oid_schema_t* sch, json_t* jroot)
 {
     if (!sch || !jroot || !json_is_object(jroot))
     {
-        return 1;
+        return oid_schema_invalid_argument;
     }
 
-    oid_free_item_defs(sch);
+    json_error_t root_parsing_err;
+    json_int_t root_appid = 0;
+    json_t* root_items = NULL;
 
-    return 0;
+    int root_parsing_ret = json_unpack_ex(
+        jroot,
+        &root_parsing_err,
+        JSON_STRICT,
+        OID_SCHEMA_ROOT_UNPACK_FORMAT,
+        "appid", &root_appid,
+        "items", &root_items
+    );
+
+    if (root_parsing_ret != 0)
+    {
+        oid_set_json_error(sch, &root_parsing_err);
+        return oid_schema_json_syntax;
+    }
+
+    if (!json_is_array(root_items))
+    {
+        return oid_schema_json_format;
+    }
+
+    sch->appid = root_appid;
+
+    // TODO load item defs root in cache
+
+    return oid_schema_success;
 }
 
-int oid_load_itemdef_schema(oid_schema_t* sch, const char* file_path)
+oid_schema_error_t oid_load_itemdef_schema(oid_schema_t* sch, const char* file_path)
 {
     if (!sch || !file_path)
     {
-        return 1;
+        return oid_schema_invalid_argument;
     }
 
     json_error_t json_err;
@@ -50,67 +77,30 @@ int oid_load_itemdef_schema(oid_schema_t* sch, const char* file_path)
     if(!root)
     {
         oid_set_json_error(sch, &json_err);
-        return 2;
+        return oid_schema_json_syntax;
     }
 
-    int pres = oid_parse_json_to_struct(sch, root);
+    oid_schema_error_t res = oid_parse_json_root(sch, root);
 
     json_decref(root);
-    return pres;
-}
-
-int oid_alloc_item_defs(oid_schema_t* sch, size_t size)
-{
-    if (!sch)
-    {
-        return 1;
-    }
-
-    size_t newsz = sch->item_defs_capacity + size;
-    oid_itemdef_t* tmp = realloc(sch->item_defs, newsz * sizeof(oid_itemdef_t));
-    if (!tmp)
-    {
-        return 2;
-    }
-    
-    sch->item_defs = tmp;
-    sch->item_defs_capacity = newsz;
-    return 0;
-}
-
-void oid_free_item_defs(oid_schema_t* sch)
-{
-    if (!sch)
-    {
-        return;
-    }
-
-    free(sch->item_defs);
-    sch->item_defs_capacity = 0;
-    sch->item_defs_size = 0;
-}
-
-size_t oid_get_schema_capacity(const oid_schema_t* sch)
-{
-    if (!sch)
-    {
-        return 0;
-    }
-
-    return sch->item_defs_capacity;
-}
-
-size_t oid_get_schema_size(const oid_schema_t* sch)
-{
-    if (!sch)
-    {
-        return 0;
-    }
-
-    return sch->item_defs_size;
+    return res;
 }
 
 /* ERROR HANDLING */
+
+const char* oid_schema_error_to_string(oid_schema_error_t err)
+{
+    switch (err)
+    {
+        case oid_schema_success:            return "Success";
+        case oid_schema_unknown:            return "Unknown error";
+        case oid_schema_invalid_argument:   return "Invalid argument";
+        case oid_schema_out_of_memory:      return "Out of memory";
+        case oid_schema_json_format:        return "Unexpected Steam Inventory Schema JSON";
+        case oid_schema_json_syntax:        return "Jansson JSON parsing error";
+        default:                            return oid_schema_error_to_string(oid_schema_unknown);
+    }
+}
 
 const json_error_t* oid_get_last_json_err(const oid_schema_t* sch)
 {
@@ -119,7 +109,7 @@ const json_error_t* oid_get_last_json_err(const oid_schema_t* sch)
         return NULL;
     }
 
-    return &sch->last_json_err;
+    return &sch->last_syntax_err;
 }
 
 void oid_set_json_error(oid_schema_t* sch, const json_error_t* err)
@@ -129,5 +119,5 @@ void oid_set_json_error(oid_schema_t* sch, const json_error_t* err)
         return;
     }
 
-    sch->last_json_err = *err;
+    sch->last_syntax_err = *err;
 }
