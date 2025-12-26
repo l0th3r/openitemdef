@@ -1,0 +1,26 @@
+name: Build CI
+
+on:
+  pull_request:
+    branches: ["**"]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake build-essential libjansson-dev
+
+      - name: Make build script executable
+        run: chmod +x ./scripts/build.sh
+
+      - name: Build modules and test targets
+        run: ./scripts/build.sh -test
