@@ -26,7 +26,7 @@ It can be embedded in CLIs, CI pipelines, editors, or future GUI tools without r
 - A monolithic tool mixing parsing, validation, and output
 
 ## Roadmap
-### [v0.1 - Core foundation](https://github.com/l0th3r/openitemdef/milestone/1)
+### [v0.1.0 - Core foundation](https://github.com/l0th3r/openitemdef/milestone/1)
 - Diagnostics model
 - Source spans and line mapping
 - JSON backend adapter
@@ -35,7 +35,7 @@ It can be embedded in CLIs, CI pipelines, editors, or future GUI tools without r
 
 _No Steam rules yet._
 
-### [v1.0 - Semantic rules](https://github.com/l0th3r/openitemdef/milestone/2)
+### [v1.0.0 - Semantic rules](https://github.com/l0th3r/openitemdef/milestone/2)
 - Duplicate `itemdefid` detection
 - Type validation
 - Values format validation
