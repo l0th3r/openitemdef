@@ -1,4 +1,4 @@
-name: Build CI
+name: Build + Upload doc CI
 
 on:
   push:
